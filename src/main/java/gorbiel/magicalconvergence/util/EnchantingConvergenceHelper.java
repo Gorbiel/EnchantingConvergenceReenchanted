@@ -64,25 +64,24 @@ public class EnchantingConvergenceHelper {
 		return Mth.clamp((int) Math.round((d1 + d2) / 2.0D * 15.0D), 0, 15);
 	}
 
-	private static double C = 16.0D;
-	private static double F = 0.12D;
-	private static double W = 8.0D;
-	private static double E = 25.0D;
-
-	public static double calcRequiredEnchantabilityModifier(Enchantment enchantment, int level) {
+    public static double calcRequiredEnchantabilityModifier(Enchantment enchantment, int level) {
 		level = Mth.clamp(level, 0, enchantment.getMaxLevel());
-		int i = Mth.ceil(1.0D + C - (C * C) / (level + C - 1.0D));
-		return F * (double) enchantment.getMinCost(i);
+        double c = 16.0D;
+        int i = Mth.ceil(1.0D + c - (c * c) / (level + c - 1.0D));
+        double f = 0.12D;
+        return f * (double) enchantment.getMinCost(i);
 	}
 
 	public static double calcRarityModifier(Enchantment enchantment) {
 		int i = enchantment.getRarity().getWeight();
-		return (10.0D + W) / ((double) i + W);
+        double w = 8.0D;
+        return (10.0D + w) / ((double) i + w);
 	}
 
 	public static double calcItemEnchantabilityModifier(ItemStack stack) {
 		int i = stack.getEnchantmentValue();
-		return 1.0D / (1.0D + ((double) i / E));
+        double e = 25.0D;
+        return 1.0D / (1.0D + ((double) i / e));
 	}
 
 }

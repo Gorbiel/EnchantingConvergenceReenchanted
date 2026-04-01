@@ -2,6 +2,7 @@ package gorbiel.magicalconvergence.reflection;
 
 import java.lang.reflect.Field;
 
+@SuppressWarnings("unused")
 public class ReflectionField<T> {
 
 	private final Field field;

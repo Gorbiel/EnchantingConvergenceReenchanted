@@ -73,7 +73,7 @@ public class PlayerEventHandler {
 
 			MenuProvider provider = new MenuProvider() {
 				@Override
-				public Component getDisplayName() {
+				public @NotNull Component getDisplayName() {
 					return enchantingTable.getDisplayName();
 				}
 

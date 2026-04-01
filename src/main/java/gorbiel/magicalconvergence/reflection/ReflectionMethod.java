@@ -3,6 +3,7 @@ package gorbiel.magicalconvergence.reflection;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+@SuppressWarnings("unused")
 public class ReflectionMethod<T> {
 
 	private final Method method;

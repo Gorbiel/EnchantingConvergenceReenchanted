@@ -3,6 +3,7 @@ package gorbiel.magicalconvergence.reflection;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+@SuppressWarnings("unused")
 public class ReflectionConstructor<T> {
 
 	private final Constructor<T> constructor;

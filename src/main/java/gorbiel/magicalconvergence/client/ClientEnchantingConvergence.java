@@ -20,7 +20,6 @@ public class ClientEnchantingConvergence {
 		);
 	}
 
-	@SuppressWarnings("resource")
 	@OnlyIn(Dist.CLIENT)
 	public static Player getPlayer() {
 		return Minecraft.getInstance().player;

@@ -83,7 +83,7 @@ public class ContainerEnchantingConvergence extends AbstractContainerMenu {
 			 * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
 			 */
 			@Override
-			public boolean mayPlace(ItemStack stack) {
+			public boolean mayPlace(@NotNull ItemStack stack) {
 				return true;
 			}
 
@@ -101,7 +101,7 @@ public class ContainerEnchantingConvergence extends AbstractContainerMenu {
 			 * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
 			 */
 			@Override
-			public boolean mayPlace(ItemStack stack) {
+			public boolean mayPlace(@NotNull ItemStack stack) {
 				return stack.is(Tags.Items.GEMS_LAPIS);
 			}
 		});
@@ -132,7 +132,7 @@ public class ContainerEnchantingConvergence extends AbstractContainerMenu {
 				 * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
 				 */
 				@Override
-				public boolean mayPlace(ItemStack stack) {
+				public boolean mayPlace(@NotNull ItemStack stack) {
 					return stack.canEquip(equipmentslot, ContainerEnchantingConvergence.this.player);
 				}
 
@@ -140,7 +140,7 @@ public class ContainerEnchantingConvergence extends AbstractContainerMenu {
 				 * Return whether this slot's stack can be taken from this slot.
 				 */
 				@Override
-				public boolean mayPickup(Player playerIn) {
+				public boolean mayPickup(@NotNull Player playerIn) {
 					ItemStack itemstack = this.getItem();
 					return (itemstack.isEmpty() || playerIn.isCreative() || !EnchantmentHelper.hasBindingCurse(itemstack)) && super.mayPickup(playerIn);
 				}
@@ -203,7 +203,7 @@ public class ContainerEnchantingConvergence extends AbstractContainerMenu {
 	 * Callback for when the crafting matrix is changed.
 	 */
 	@Override
-	public void slotsChanged(Container inventoryIn) {
+	public void slotsChanged(@NotNull Container inventoryIn) {
 		if (inventoryIn != this.tableInventory) {
 			return;
 		}
@@ -420,9 +420,7 @@ public class ContainerEnchantingConvergence extends AbstractContainerMenu {
 		ResourceLocation registryName = ForgeRegistries.ENCHANTMENTS.getKey(enchantment);
 		ListTag enchantmentList = stack.getEnchantmentTags();
 
-		for (int i = 0; i < enchantmentList.size(); i++) {
-
-		}
+//		for (int i = 0; i < enchantmentList.size(); i++) {} // empty for for some reason?
 		for (Tag nbt : enchantmentList) {
 			ResourceLocation resourcelocation1 = ResourceLocation.tryParse(((CompoundTag) nbt).getString("id"));
 			if (resourcelocation1 != null && resourcelocation1.equals(registryName)) {
@@ -477,7 +475,7 @@ public class ContainerEnchantingConvergence extends AbstractContainerMenu {
 	public @NotNull ItemStack quickMoveStack(@NotNull Player playerIn, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.slots.get(index);
-		if (slot != null && slot.hasItem()) {
+		if (slot.hasItem()) { // original statement "slot != null && slot.hasItem()" but slot should never be null
 			ItemStack itemstack1 = slot.getItem();
 			itemstack = itemstack1.copy();
 			if (index == 0) {
