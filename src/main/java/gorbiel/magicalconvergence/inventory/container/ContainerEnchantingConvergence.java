@@ -44,37 +44,37 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
-public class ContainerEnchantingConvergence extends Container {
+public class ContainerEnchantingConvergence extends AbstractContainerMenu {
 
-	public static final ResourceLocation LOCATION_BLOCKS_TEXTURE = new ResourceLocation("textures/atlas/blocks.png");
-	public static final ResourceLocation EMPTY_ARMOR_SLOT_HELMET = new ResourceLocation("item/empty_armor_slot_helmet");
-	public static final ResourceLocation EMPTY_ARMOR_SLOT_CHESTPLATE = new ResourceLocation("item/empty_armor_slot_chestplate");
-	public static final ResourceLocation EMPTY_ARMOR_SLOT_LEGGINGS = new ResourceLocation("item/empty_armor_slot_leggings");
-	public static final ResourceLocation EMPTY_ARMOR_SLOT_BOOTS = new ResourceLocation("item/empty_armor_slot_boots");
-	public static final ResourceLocation EMPTY_ARMOR_SLOT_SHIELD = new ResourceLocation("item/empty_armor_slot_shield");
+	public static final ResourceLocation LOCATION_BLOCKS_TEXTURE = ResourceLocation.parse("textures/atlas/blocks.png");
+	public static final ResourceLocation EMPTY_ARMOR_SLOT_HELMET = ResourceLocation.parse("item/empty_armor_slot_helmet");
+	public static final ResourceLocation EMPTY_ARMOR_SLOT_CHESTPLATE = ResourceLocation.parse("item/empty_armor_slot_chestplate");
+	public static final ResourceLocation EMPTY_ARMOR_SLOT_LEGGINGS = ResourceLocation.parse("item/empty_armor_slot_leggings");
+	public static final ResourceLocation EMPTY_ARMOR_SLOT_BOOTS = ResourceLocation.parse("item/empty_armor_slot_boots");
+	public static final ResourceLocation EMPTY_ARMOR_SLOT_SHIELD = ResourceLocation.parse("item/empty_armor_slot_shield");
 	private static final ResourceLocation[] ARMOR_SLOT_TEXTURES = new ResourceLocation[] { EMPTY_ARMOR_SLOT_BOOTS, EMPTY_ARMOR_SLOT_LEGGINGS, EMPTY_ARMOR_SLOT_CHESTPLATE, EMPTY_ARMOR_SLOT_HELMET };
-	private static final EquipmentSlotType[] VALID_EQUIPMENT_SLOTS = new EquipmentSlotType[] { EquipmentSlotType.HEAD, EquipmentSlotType.CHEST, EquipmentSlotType.LEGS, EquipmentSlotType.FEET };
-	private final IInventory tableInventory = new Inventory(2) {
+	private static final EquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EquipmentSlot[] { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
+	private final Container tableInventory = new SimpleContainer(2) {
 		/**
 		 * For tile entities, ensures the chunk containing the tile entity is saved to disk later - the game won't think
 		 * it hasn't changed and skip it.
 		 */
 		@Override
-		public void markDirty() {
-			super.markDirty();
-			ContainerEnchantingConvergence.this.onCraftMatrixChanged(this);
+		public void setChanged() {
+			super.setChanged();
+			ContainerEnchantingConvergence.this.slotsChanged(this);
 		}
 	};
-	private final PlayerEntity player;
-	private final IWorldPosCallable worldPosCallable;
+	private final Player player;
+	private final ContainerLevelAccess worldPosCallable;
 	private final List<Enchantment> enchList = new ArrayList<>();
-	private final IntReferenceHolder power = IntReferenceHolder.single();
+	private final DataSlot power = DataSlot.standalone();
 
-	public ContainerEnchantingConvergence(int id, PlayerInventory playerInventory) {
-		this(id, playerInventory, IWorldPosCallable.DUMMY);
+	public ContainerEnchantingConvergence(int id, Inventory playerInventory) {
+		this(id, playerInventory, ContainerLevelAccess.NULL);
 	}
 
-	public ContainerEnchantingConvergence(int id, PlayerInventory playerInventory, IWorldPosCallable worldPosCallable) {
+	public ContainerEnchantingConvergence(int id, Inventory playerInventory, ContainerLevelAccess worldPosCallable) {
 		super(EnchantingConvergenceContainers.ENCHANTING_TABLE.get(), id);
 		this.player = playerInventory.player;
 		this.worldPosCallable = worldPosCallable;
@@ -83,7 +83,7 @@ public class ContainerEnchantingConvergence extends Container {
 			 * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
 			 */
 			@Override
-			public boolean isItemValid(ItemStack stack) {
+			public boolean mayPlace(ItemStack stack) {
 				return true;
 			}
 
@@ -92,7 +92,7 @@ public class ContainerEnchantingConvergence extends Container {
 			 * case of armor slots)
 			 */
 			@Override
-			public int getSlotStackLimit() {
+			public int getMaxStackSize() {
 				return 1;
 			}
 		});
@@ -101,8 +101,8 @@ public class ContainerEnchantingConvergence extends Container {
 			 * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
 			 */
 			@Override
-			public boolean isItemValid(ItemStack stack) {
-				return Tags.Items.GEMS_LAPIS.contains(stack.getItem());
+			public boolean mayPlace(ItemStack stack) {
+				return stack.is(Tags.Items.GEMS_LAPIS);
 			}
 		});
 
@@ -117,14 +117,14 @@ public class ContainerEnchantingConvergence extends Container {
 		}
 
 		for (int k = 0; k < 4; ++k) {
-			final EquipmentSlotType equipmentslottype = VALID_EQUIPMENT_SLOTS[k];
+			final EquipmentSlot equipmentslot = VALID_EQUIPMENT_SLOTS[k];
 			this.addSlot(new Slot(playerInventory, 39 - k, 195, 107 + k * 18) {
 				/**
 				 * Returns the maximum stack size for a given slot (usually the same as getInventoryStackLimit(), but 1 in
 				 * the case of armor slots)
 				 */
 				@Override
-				public int getSlotStackLimit() {
+				public int getMaxStackSize() {
 					return 1;
 				}
 
@@ -132,36 +132,34 @@ public class ContainerEnchantingConvergence extends Container {
 				 * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
 				 */
 				@Override
-				public boolean isItemValid(ItemStack stack) {
-					return stack.canEquip(equipmentslottype, ContainerEnchantingConvergence.this.player);
+				public boolean mayPlace(ItemStack stack) {
+					return stack.canEquip(equipmentslot, ContainerEnchantingConvergence.this.player);
 				}
 
 				/**
 				 * Return whether this slot's stack can be taken from this slot.
 				 */
 				@Override
-				public boolean canTakeStack(PlayerEntity playerIn) {
-					ItemStack itemstack = this.getStack();
-					return !itemstack.isEmpty() && !playerIn.isCreative() && EnchantmentHelper.hasBindingCurse(itemstack) ? false : super.canTakeStack(playerIn);
+				public boolean mayPickup(Player playerIn) {
+					ItemStack itemstack = this.getItem();
+					return (itemstack.isEmpty() || playerIn.isCreative() || !EnchantmentHelper.hasBindingCurse(itemstack)) && super.mayPickup(playerIn);
 				}
 
 				@OnlyIn(Dist.CLIENT)
-				@Override
-				public Pair<ResourceLocation, ResourceLocation> getBackground() {
-					return Pair.of(LOCATION_BLOCKS_TEXTURE, ARMOR_SLOT_TEXTURES[equipmentslottype.getIndex()]);
+                public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+					return Pair.of(LOCATION_BLOCKS_TEXTURE, ARMOR_SLOT_TEXTURES[equipmentslot.getIndex()]);
 				}
 			});
 		}
 
 		this.addSlot(new Slot(playerInventory, 40, 217, 161) {
 			@OnlyIn(Dist.CLIENT)
-			@Override
-			public Pair<ResourceLocation, ResourceLocation> getBackground() {
+            public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
 				return Pair.of(LOCATION_BLOCKS_TEXTURE, EMPTY_ARMOR_SLOT_SHIELD);
 			}
 		});
 
-		this.trackInt(this.power);
+		this.addDataSlot(this.power);
 		this.calcEnchantingPower();
 	}
 
@@ -170,21 +168,23 @@ public class ContainerEnchantingConvergence extends Container {
 	}
 
 	private int calcEnchantingPower() {
-		return this.worldPosCallable.applyOrElse((world, pos) -> {
+		return this.worldPosCallable.evaluate((world, pos) -> {
 			int power = 0;
 
-			BlockPos.Mutable mutable = new BlockPos.Mutable();
+			BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
 			for (int k = -1; k <= 1; ++k) {
 				for (int l = -1; l <= 1; ++l) {
-					if ((k != 0 || l != 0) && world.isAirBlock(mutable.setAndOffset(pos, l, 0, k)) && world.isAirBlock(mutable.setAndOffset(pos, l, 1, k))) {
-						power += this.getPower(world, mutable.setAndOffset(pos, l * 2, 0, k * 2));
-						power += this.getPower(world, mutable.setAndOffset(pos, l * 2, 1, k * 2));
+					if ((k != 0 || l != 0)
+							&& world.isEmptyBlock(mutable.set(pos).move(l, 0, k))
+							&& world.isEmptyBlock(mutable.set(pos).move(l, 1, k))) {
+						power += (int) this.getPower(world, mutable.set(pos).move(l * 2, 0, k * 2));
+						power += (int) this.getPower(world, mutable.set(pos).move(l * 2, 1, k * 2));
 
 						if (l != 0 && k != 0) {
-							power += this.getPower(world, mutable.setAndOffset(pos, l * 2, 0, k));
-							power += this.getPower(world, mutable.setAndOffset(pos, l * 2, 1, k));
-							power += this.getPower(world, mutable.setAndOffset(pos, l, 0, k * 2));
-							power += this.getPower(world, mutable.setAndOffset(pos, l, 1, k * 2));
+							power += (int) this.getPower(world, mutable.set(pos).move(l * 2, 0, k));
+							power += (int) this.getPower(world, mutable.set(pos).move(l * 2, 1, k));
+							power += (int) this.getPower(world, mutable.set(pos).move(l, 0, k * 2));
+							power += (int) this.getPower(world, mutable.set(pos).move(l, 1, k * 2));
 						}
 					}
 				}
@@ -195,7 +195,7 @@ public class ContainerEnchantingConvergence extends Container {
 		}, 0);
 	}
 
-	private float getPower(World world, BlockPos pos) {
+	private float getPower(Level world, BlockPos pos) {
 		return world.getBlockState(pos).getEnchantPowerBonus(world, pos);
 	}
 
@@ -203,7 +203,7 @@ public class ContainerEnchantingConvergence extends Container {
 	 * Callback for when the crafting matrix is changed.
 	 */
 	@Override
-	public void onCraftMatrixChanged(IInventory inventoryIn) {
+	public void slotsChanged(Container inventoryIn) {
 		if (inventoryIn != this.tableInventory) {
 			return;
 		}
@@ -250,7 +250,7 @@ public class ContainerEnchantingConvergence extends Container {
 
 		this.calcEnchantingPower();
 
-		ItemStack stack = inventoryIn.getStackInSlot(0);
+		ItemStack stack = inventoryIn.getItem(0);
 		this.enchList.clear();
 
 		if (stack.isEmpty()) {
@@ -264,9 +264,9 @@ public class ContainerEnchantingConvergence extends Container {
 	 * Handles the given Button-click on the server, currently only used by enchanting. Name is for legacy.
 	 */
 	@Override
-	public boolean enchantItem(PlayerEntity playerIn, int id) {
-		ItemStack stack = this.tableInventory.getStackInSlot(0);
-		ItemStack stack1 = this.tableInventory.getStackInSlot(1);
+	public boolean clickMenuButton(Player playerIn, int id) {
+		ItemStack stack = this.tableInventory.getItem(0);
+		ItemStack stack1 = this.tableInventory.getItem(1);
 		EnchantingMode mode = (id >>> 31) == 1 ? EnchantingMode.BOOK : EnchantingMode.NORMAL;
 		int enchantmentId = id & 0x7FFFFFFF;
 		int level = playerIn.experienceLevel;
@@ -290,7 +290,7 @@ public class ContainerEnchantingConvergence extends Container {
 			}
 
 			Collection<Enchantment> enchantments = EnchantmentHelper.getEnchantments(stack).keySet();
-			if (!enchantments.contains(enchantment) && !EnchantmentHelper.areAllCompatibleWith(enchantments, enchantment)) {
+			if (!enchantments.contains(enchantment) && !EnchantmentHelper.isEnchantmentCompatible(enchantments, enchantment)) {
 				return false;
 			}
 
@@ -302,17 +302,17 @@ public class ContainerEnchantingConvergence extends Container {
 				return false;
 			}
 
-			playerIn.onEnchant(stack, levelCost);
+			playerIn.onEnchantmentPerformed(stack, levelCost);
 
-			if (!playerIn.abilities.isCreativeMode) {
+			if (!playerIn.isCreative()) {
 				stack1.shrink(lapisCost);
 				if (stack1.isEmpty()) {
-					this.tableInventory.setInventorySlotContents(1, ItemStack.EMPTY);
+					this.tableInventory.setItem(1, ItemStack.EMPTY);
 				}
 			}
 
 			if (stack.getItem() == Items.BOOK) {
-				CompoundNBT tag = stack.getTag();
+				CompoundTag tag = stack.getTag();
 				stack = new ItemStack(Items.ENCHANTED_BOOK);
 
 				if (tag != null) {
@@ -320,20 +320,20 @@ public class ContainerEnchantingConvergence extends Container {
 				}
 
 				setOrAddEnchantmentLevel(stack, enchantment, enchantmentLevel);
-				this.tableInventory.setInventorySlotContents(0, stack);
+				this.tableInventory.setItem(0, stack);
 			} else {
 				setOrAddEnchantmentLevel(stack, enchantment, enchantmentLevel);
 			}
 
-			playerIn.addStat(Stats.ENCHANT_ITEM);
-			if (playerIn instanceof ServerPlayerEntity) {
-				CriteriaTriggers.ENCHANTED_ITEM.trigger((ServerPlayerEntity) playerIn, stack, 3);
+			playerIn.awardStat(Stats.ENCHANT_ITEM);
+			if (playerIn instanceof ServerPlayer) {
+				CriteriaTriggers.ENCHANTED_ITEM.trigger((ServerPlayer) playerIn, stack, 3);
 			}
 
-			this.tableInventory.markDirty();
-			this.onCraftMatrixChanged(this.tableInventory);
-			this.worldPosCallable.consume((world, pos) -> {
-				world.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, world.rand.nextFloat() * 0.1F + 0.9F);
+			this.tableInventory.setChanged();
+			this.slotsChanged(this.tableInventory);
+			this.worldPosCallable.execute((world, pos) -> {
+				world.playSound(null, pos, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
 			});
 		} else if (mode == EnchantingMode.BOOK) {
 			if (stack.getItem() != Items.BOOK) {
@@ -348,16 +348,16 @@ public class ContainerEnchantingConvergence extends Container {
 				return false;
 			}
 
-			playerIn.onEnchant(stack, levelCost);
+			playerIn.onEnchantmentPerformed(stack, levelCost);
 
-			if (!playerIn.abilities.isCreativeMode) {
+			if (!playerIn.isCreative()) {
 				stack1.shrink(lapisCost);
 				if (stack1.isEmpty()) {
-					this.tableInventory.setInventorySlotContents(1, ItemStack.EMPTY);
+					this.tableInventory.setItem(1, ItemStack.EMPTY);
 				}
 			}
 
-			CompoundNBT tag = stack.getTag();
+			CompoundTag tag = stack.getTag();
 			stack = new ItemStack(Items.ENCHANTED_BOOK);
 
 			if (tag != null) {
@@ -397,18 +397,18 @@ public class ContainerEnchantingConvergence extends Container {
 			}
 
 			UnlockedEnchantmentHelper.unlock(playerIn, selectedEnchData.enchantment, selectedEnchData.level);
-			EnchantedBookItem.addEnchantment(stack, new EnchantmentData(selectedEnchData.enchantment, selectedEnchData.level));
-			this.tableInventory.setInventorySlotContents(0, stack);
+			EnchantedBookItem.addEnchantment(stack, new EnchantmentInstance(selectedEnchData.enchantment, selectedEnchData.level));
+			this.tableInventory.setItem(0, stack);
 
-			playerIn.addStat(Stats.ENCHANT_ITEM);
-			if (playerIn instanceof ServerPlayerEntity) {
-				CriteriaTriggers.ENCHANTED_ITEM.trigger((ServerPlayerEntity) playerIn, stack, 3);
+			playerIn.awardStat(Stats.ENCHANT_ITEM);
+			if (playerIn instanceof ServerPlayer) {
+				CriteriaTriggers.ENCHANTED_ITEM.trigger((ServerPlayer) playerIn, stack, 3);
 			}
 
-			this.tableInventory.markDirty();
-			this.onCraftMatrixChanged(this.tableInventory);
-			this.worldPosCallable.consume((world, pos) -> {
-				world.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, world.rand.nextFloat() * 0.1F + 0.9F);
+			this.tableInventory.setChanged();
+			this.slotsChanged(this.tableInventory);
+			this.worldPosCallable.execute((world, pos) -> {
+				world.playSound(null, pos, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
 			});
 		}
 
@@ -417,16 +417,16 @@ public class ContainerEnchantingConvergence extends Container {
 
 	private static void setOrAddEnchantmentLevel(ItemStack stack, Enchantment enchantment, int level) {
 		boolean flag = false;
-		ResourceLocation registryName = enchantment.getRegistryName();
-		ListNBT enchantmentList = stack.getEnchantmentTagList();
+		ResourceLocation registryName = ForgeRegistries.ENCHANTMENTS.getKey(enchantment);
+		ListTag enchantmentList = stack.getEnchantmentTags();
 
 		for (int i = 0; i < enchantmentList.size(); i++) {
 
 		}
-		for (INBT nbt : enchantmentList) {
-			ResourceLocation resourcelocation1 = ResourceLocation.tryCreate(((CompoundNBT) nbt).getString("id"));
+		for (Tag nbt : enchantmentList) {
+			ResourceLocation resourcelocation1 = ResourceLocation.tryParse(((CompoundTag) nbt).getString("id"));
 			if (resourcelocation1 != null && resourcelocation1.equals(registryName)) {
-				((CompoundNBT) nbt).putInt("lvl", level);
+				((CompoundTag) nbt).putInt("lvl", level);
 				flag = true;
 				break;
 			}
@@ -434,9 +434,9 @@ public class ContainerEnchantingConvergence extends Container {
 
 		if (!flag) {
 			if (stack.getItem() == Items.ENCHANTED_BOOK) {
-				EnchantedBookItem.addEnchantment(stack, new EnchantmentData(enchantment, level));
+				EnchantedBookItem.addEnchantment(stack, new EnchantmentInstance(enchantment, level));
 			} else {
-				stack.addEnchantment(enchantment, level);
+				stack.enchant(enchantment, level);
 			}
 		}
 	}
@@ -446,7 +446,7 @@ public class ContainerEnchantingConvergence extends Container {
 	}
 
 	public int getLapisAmount() {
-		ItemStack stack = this.tableInventory.getStackInSlot(1);
+		ItemStack stack = this.tableInventory.getItem(1);
 		return stack.isEmpty() ? 0 : stack.getCount();
 	}
 
@@ -454,10 +454,10 @@ public class ContainerEnchantingConvergence extends Container {
 	 * Called when the container is closed.
 	 */
 	@Override
-	public void onContainerClosed(PlayerEntity playerIn) {
-		super.onContainerClosed(playerIn);
-		this.worldPosCallable.consume((world, pos) -> {
-			this.clearContainer(playerIn, playerIn.world, this.tableInventory);
+	public void removed(@NotNull Player playerIn) {
+		super.removed(playerIn);
+		this.worldPosCallable.execute((world, pos) -> {
+			this.clearContainer(playerIn, this.tableInventory);
 		});
 	}
 
@@ -465,8 +465,8 @@ public class ContainerEnchantingConvergence extends Container {
 	 * Determines whether supplied player can use this container
 	 */
 	@Override
-	public boolean canInteractWith(PlayerEntity playerIn) {
-		return isWithinUsableDistance(this.worldPosCallable, playerIn, Blocks.ENCHANTING_TABLE);
+	public boolean stillValid(@NotNull Player playerIn) {
+		return stillValid(this.worldPosCallable, playerIn, Blocks.ENCHANTING_TABLE);
 	}
 
 	/**
@@ -474,39 +474,39 @@ public class ContainerEnchantingConvergence extends Container {
 	 * inventory and the other inventory(s).
 	 */
 	@Override
-	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+	public @NotNull ItemStack quickMoveStack(@NotNull Player playerIn, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
-		Slot slot = this.inventorySlots.get(index);
-		if (slot != null && slot.getHasStack()) {
-			ItemStack itemstack1 = slot.getStack();
+		Slot slot = this.slots.get(index);
+		if (slot != null && slot.hasItem()) {
+			ItemStack itemstack1 = slot.getItem();
 			itemstack = itemstack1.copy();
 			if (index == 0) {
-				if (!this.mergeItemStack(itemstack1, 2, 38, true)) {
+				if (!this.moveItemStackTo(itemstack1, 2, 38, true)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (index == 1) {
-				if (!this.mergeItemStack(itemstack1, 2, 38, true)) {
+				if (!this.moveItemStackTo(itemstack1, 2, 38, true)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (itemstack1.getItem() == Items.LAPIS_LAZULI) {
-				if (!this.mergeItemStack(itemstack1, 1, 2, true)) {
+				if (!this.moveItemStackTo(itemstack1, 1, 2, true)) {
 					return ItemStack.EMPTY;
 				}
 			} else {
-				if (this.inventorySlots.get(0).getHasStack() || !this.inventorySlots.get(0).isItemValid(itemstack1)) {
+				if (this.slots.get(0).hasItem() || !this.slots.get(0).mayPlace(itemstack1)) {
 					return ItemStack.EMPTY;
 				}
 
 				ItemStack itemstack2 = itemstack1.copy();
 				itemstack2.setCount(1);
 				itemstack1.shrink(1);
-				this.inventorySlots.get(0).putStack(itemstack2);
+				this.slots.get(0).set(itemstack2);
 			}
 
 			if (itemstack1.isEmpty()) {
-				slot.putStack(ItemStack.EMPTY);
+				slot.set(ItemStack.EMPTY);
 			} else {
-				slot.onSlotChanged();
+				slot.setChanged();
 			}
 
 			if (itemstack1.getCount() == itemstack.getCount()) {

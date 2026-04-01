@@ -14,19 +14,19 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class EnchantingConvergenceHelper {
 
-	public static List<Enchantment> getValidEnchantments(ItemStack stack, PlayerEntity player) {
+	public static List<Enchantment> getValidEnchantments(ItemStack stack, Player player) {
 		if (stack.isEmpty()) {
 			return Collections.emptyList();
 		}
-		if (EnchantingConvergenceConfig.SERVER_CONFIG.checkIfItemHasEnchantability.get() && stack.getItemEnchantability() <= 0 && stack.getItem() != Items.ENCHANTED_BOOK) {
+		if (EnchantingConvergenceConfig.SERVER_CONFIG.checkIfItemHasEnchantability.get() && stack.getEnchantmentValue() <= 0 && stack.getItem() != Items.ENCHANTED_BOOK) {
 			return Collections.emptyList();
 		}
 		List<Enchantment> list = new ArrayList<>();
 		for (Enchantment enchantment : ForgeRegistries.ENCHANTMENTS.getValues()) {
-			if (EnchantingConvergenceConfig.SERVER_CONFIG.checkIfEnchantmentIsTreasureEnchantment.get() && enchantment.isTreasureEnchantment()) {
+			if (EnchantingConvergenceConfig.SERVER_CONFIG.checkIfEnchantmentIsTreasureEnchantment.get() && enchantment.isTreasureOnly()) {
 				continue;
 			}
-			if (EnchantingConvergenceConfig.SERVER_CONFIG.checkIfEnchantmentCanGenerateInLoot.get() && !enchantment.canGenerateInLoot()) {
+			if (EnchantingConvergenceConfig.SERVER_CONFIG.checkIfEnchantmentCanGenerateInLoot.get() && !enchantment.isDiscoverable()) {
 				continue;
 			}
 			if (!enchantment.canApplyAtEnchantingTable(stack) && ((stack.getItem() != Items.BOOK && stack.getItem() != Items.ENCHANTED_BOOK) || !enchantment.isAllowedOnBooks())) {
@@ -38,7 +38,7 @@ public class EnchantingConvergenceHelper {
 	}
 
 	public static int getLevelCost(ItemStack stack, Enchantment enchantment, int level) {
-		level = MathHelper.clamp(level, 0, enchantment.getMaxLevel());
+		level = Mth.clamp(level, 0, enchantment.getMaxLevel());
 		double d1 = calcRequiredEnchantabilityModifier(enchantment, level);
 		double d2 = calcRarityModifier(enchantment);
 		double d3 = calcItemEnchantabilityModifier(stack);
@@ -47,7 +47,7 @@ public class EnchantingConvergenceHelper {
 	}
 
 	public static int getLapisCost(ItemStack stack, Enchantment enchantment, int level) {
-		level = MathHelper.clamp(level, 0, enchantment.getMaxLevel());
+		level = Mth.clamp(level, 0, enchantment.getMaxLevel());
 		double d1 = calcRequiredEnchantabilityModifier(enchantment, level);
 		double d2 = calcRarityModifier(enchantment);
 		double d3 = calcItemEnchantabilityModifier(stack);
@@ -56,12 +56,12 @@ public class EnchantingConvergenceHelper {
 	}
 
 	public static int getPowerCost(Enchantment enchantment, int level) {
-		level = MathHelper.clamp(level, 0, enchantment.getMaxLevel());
-		int min = enchantment.getMinEnchantability(level);
-		int i = Math.min(enchantment.getMinEnchantability(1), 5);
+		level = Mth.clamp(level, 0, enchantment.getMaxLevel());
+		int min = enchantment.getMinCost(level);
+		int i = Math.min(enchantment.getMinCost(1), 5);
 		double d1 = (min - i * 0.5D) / 35.0D;
 		double d2 = ((double) level - 1.0D) / (double) enchantment.getMaxLevel();
-		return MathHelper.clamp((int) Math.round((d1 + d2) / 2.0D * 15.0D), 0, 15);
+		return Mth.clamp((int) Math.round((d1 + d2) / 2.0D * 15.0D), 0, 15);
 	}
 
 	private static double C = 16.0D;
@@ -70,9 +70,9 @@ public class EnchantingConvergenceHelper {
 	private static double E = 25.0D;
 
 	public static double calcRequiredEnchantabilityModifier(Enchantment enchantment, int level) {
-		level = MathHelper.clamp(level, 0, enchantment.getMaxLevel());
-		int i = MathHelper.ceil(1.0D + C - (C * C) / (level + C - 1.0D));
-		return F * (double) enchantment.getMinEnchantability(i);
+		level = Mth.clamp(level, 0, enchantment.getMaxLevel());
+		int i = Mth.ceil(1.0D + C - (C * C) / (level + C - 1.0D));
+		return F * (double) enchantment.getMinCost(i);
 	}
 
 	public static double calcRarityModifier(Enchantment enchantment) {
@@ -81,7 +81,7 @@ public class EnchantingConvergenceHelper {
 	}
 
 	public static double calcItemEnchantabilityModifier(ItemStack stack) {
-		int i = stack.getItemEnchantability();
+		int i = stack.getEnchantmentValue();
 		return 1.0D / (1.0D + ((double) i / E));
 	}
 
