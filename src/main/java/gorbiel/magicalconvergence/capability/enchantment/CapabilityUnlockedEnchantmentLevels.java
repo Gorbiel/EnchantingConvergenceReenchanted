@@ -11,10 +11,10 @@ import net.minecraftforge.network.PacketDistributor;
 
 public class CapabilityUnlockedEnchantmentLevels {
 
-	private final PlayerEntity player;
+	private final Player player;
 	private final Object2IntMap<ResourceLocation> unlockedEnchantmentLevels = new Object2IntOpenHashMap<>();
 
-	public CapabilityUnlockedEnchantmentLevels(PlayerEntity player) {
+	public CapabilityUnlockedEnchantmentLevels(Player player) {
 		this.player = player;
 	}
 
@@ -27,8 +27,8 @@ public class CapabilityUnlockedEnchantmentLevels {
 			return false;
 		}
 		this.unlockedEnchantmentLevels.put(enchantName, enchantLevel);
-		if (!this.player.world.isRemote) {
-			EnchantingConvergence.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) this.player), new SPacketSyncUnlockedEnchantmentLevels(this.player));
+		if (this.player != null && !this.player.level().isClientSide) {
+			EnchantingConvergence.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) this.player), new SPacketSyncUnlockedEnchantmentLevels(this.player));
 		}
 		return true;
 	}
