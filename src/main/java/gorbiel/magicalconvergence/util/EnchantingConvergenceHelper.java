@@ -1,15 +1,15 @@
-package meldexun.magicalconvergence.util;
+package gorbiel.magicalconvergence.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import meldexun.magicalconvergence.config.EnchantingConvergenceConfig;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.math.MathHelper;
+import gorbiel.magicalconvergence.config.EnchantingConvergenceConfig;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.util.Mth;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class EnchantingConvergenceHelper {

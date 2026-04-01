@@ -1,6 +1,6 @@
-package meldexun.magicalconvergence.util;
+package gorbiel.magicalconvergence.util;
 
-import net.minecraft.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantment;
 
 public class MutableEnchantmentData {
 

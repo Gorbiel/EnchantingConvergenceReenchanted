@@ -1,13 +1,13 @@
-package meldexun.magicalconvergence.capability.enchantment;
+package gorbiel.magicalconvergence.capability.enchantment;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import meldexun.magicalconvergence.EnchantingConvergence;
-import meldexun.magicalconvergence.network.packet.server.SPacketSyncUnlockedEnchantmentLevels;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.PacketDistributor;
+import gorbiel.magicalconvergence.EnchantingConvergence;
+import gorbiel.magicalconvergence.network.packet.server.SPacketSyncUnlockedEnchantmentLevels;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.PacketDistributor;
 
 public class CapabilityUnlockedEnchantmentLevels {
 

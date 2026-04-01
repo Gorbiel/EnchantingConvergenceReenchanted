@@ -1,4 +1,4 @@
-package meldexun.magicalconvergence.config;
+package gorbiel.magicalconvergence.config;
 
 import org.apache.commons.lang3.tuple.Pair;
 

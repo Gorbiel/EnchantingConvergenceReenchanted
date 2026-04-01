@@ -1,4 +1,4 @@
-package meldexun.magicalconvergence.reflection;
+package gorbiel.magicalconvergence.reflection;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
