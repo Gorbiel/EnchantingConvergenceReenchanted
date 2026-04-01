@@ -5,6 +5,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullSupplier;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class BasicCapabilityProvider<C> implements ICapabilityProvider {
 
@@ -17,7 +18,7 @@ public abstract class BasicCapabilityProvider<C> implements ICapabilityProvider 
 	}
 
 	@Override
-	public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
+	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
 		return cap == this.capability ? this.instance.cast() : LazyOptional.empty();
 	}
 
