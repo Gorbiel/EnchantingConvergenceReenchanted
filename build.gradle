@@ -83,7 +83,8 @@ spotless {
     java {
         target 'src/*/java/**/*.java'
         targetExclude '**/build/**'
-        googleJavaFormat()
+//        googleJavaFormat('1.28.0') // hate 2-space tabs
+        palantirJavaFormat()
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()
