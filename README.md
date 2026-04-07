@@ -1,4 +1,15 @@
 # Enchanting Convergence: Reenchanted
+[![Build Status](https://github.com/Gorbiel/EnchantingConvergenceReenchanted/actions/workflows/gradle.yml/badge.svg)](https://github.com/Gorbiel/EnchantingConvergenceReenchanted/actions/workflows/gradle.yml)
+[![CodeQL](https://github.com/Gorbiel/EnchantingConvergenceReenchanted/actions/workflows/codeql.yml/badge.svg)](https://github.com/Gorbiel/EnchantingConvergenceReenchanted/actions/workflows/codeql.yml)
+[![Last Commit](https://img.shields.io/github/last-commit/Gorbiel/EnchantingConvergenceReenchanted)](https://github.com/Gorbiel/EnchantingConvergenceReenchanted/commit/master)
+[![Java](https://img.shields.io/badge/Java-17-blue)]()
+[![License](https://img.shields.io/github/license/Gorbiel/EnchantingConvergenceReenchanted)](./NOTICE)
+
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-green)](https://www.minecraft.net/en-us/article/minecraft--java-edition-1-20-1)
+[![Loader](https://img.shields.io/badge/Loader-Forge-red)](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.20.1.html)
+[![Modrinth Downloads](https://img.shields.io/modrinth/dt/<project-id>?logo=modrinth)]()
+[![CurseForge Downloads](https://img.shields.io/curseforge/dt/<project-id>?logo=curseforge)]()
+
 
 A modern port of **Enchanting Convergence** to Minecraft 1.20.1
 
