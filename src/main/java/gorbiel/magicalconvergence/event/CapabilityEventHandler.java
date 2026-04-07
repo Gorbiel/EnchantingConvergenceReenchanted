@@ -66,13 +66,10 @@ public class CapabilityEventHandler {
         oldPlayer.reviveCaps();
         oldPlayer
                 .getCapability(CapabilityUnlockedEnchantmentLevelsProvider.CAPABILITY)
-                .ifPresent(oldCap -> {
-                    newPlayer
-                            .getCapability(CapabilityUnlockedEnchantmentLevelsProvider.CAPABILITY)
-                            .ifPresent(newCap -> {
-                                newCap.setUnlockedEnchantmentLevels(oldCap.getUnlockedEnchantmentLevels());
-                            });
-                });
+                .ifPresent(oldCap -> newPlayer
+                        .getCapability(CapabilityUnlockedEnchantmentLevelsProvider.CAPABILITY)
+                        .ifPresent(
+                                newCap -> newCap.setUnlockedEnchantmentLevels(oldCap.getUnlockedEnchantmentLevels())));
         oldPlayer.invalidateCaps();
     }
 }

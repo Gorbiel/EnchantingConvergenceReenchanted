@@ -354,15 +354,13 @@ public class ContainerEnchantingConvergence extends AbstractContainerMenu {
 
             this.tableInventory.setChanged();
             this.slotsChanged(this.tableInventory);
-            this.worldPosCallable.execute((world, pos) -> {
-                world.playSound(
-                        null,
-                        pos,
-                        SoundEvents.ENCHANTMENT_TABLE_USE,
-                        SoundSource.BLOCKS,
-                        1.0F,
-                        world.random.nextFloat() * 0.1F + 0.9F);
-            });
+            this.worldPosCallable.execute((world, pos) -> world.playSound(
+                    null,
+                    pos,
+                    SoundEvents.ENCHANTMENT_TABLE_USE,
+                    SoundSource.BLOCKS,
+                    1.0F,
+                    world.random.nextFloat() * 0.1F + 0.9F));
         } else if (mode == EnchantingMode.BOOK) {
             if (stack.getItem() != Items.BOOK) {
                 return false;
@@ -436,15 +434,13 @@ public class ContainerEnchantingConvergence extends AbstractContainerMenu {
 
             this.tableInventory.setChanged();
             this.slotsChanged(this.tableInventory);
-            this.worldPosCallable.execute((world, pos) -> {
-                world.playSound(
-                        null,
-                        pos,
-                        SoundEvents.ENCHANTMENT_TABLE_USE,
-                        SoundSource.BLOCKS,
-                        1.0F,
-                        world.random.nextFloat() * 0.1F + 0.9F);
-            });
+            this.worldPosCallable.execute((world, pos) -> world.playSound(
+                    null,
+                    pos,
+                    SoundEvents.ENCHANTMENT_TABLE_USE,
+                    SoundSource.BLOCKS,
+                    1.0F,
+                    world.random.nextFloat() * 0.1F + 0.9F));
         }
 
         return true;
@@ -487,9 +483,7 @@ public class ContainerEnchantingConvergence extends AbstractContainerMenu {
     @Override
     public void removed(@NotNull Player playerIn) {
         super.removed(playerIn);
-        this.worldPosCallable.execute((world, pos) -> {
-            this.clearContainer(playerIn, this.tableInventory);
-        });
+        this.worldPosCallable.execute((world, pos) -> this.clearContainer(playerIn, this.tableInventory));
     }
 
     /** Determines whether supplied player can use this container */
