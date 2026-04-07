@@ -3,6 +3,8 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
+    id 'com.diffplug.spotless' version '7.2.1'
+    id 'jacoco'
 }
 
 group = mod_group_id
@@ -67,6 +69,8 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    // Testing
     testImplementation 'org.junit.jupiter:junit-jupiter:5.13.4'
 
     // Example:
@@ -75,8 +79,38 @@ dependencies {
     // runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 }
 
+spotless {
+    java {
+        target 'src/*/java/**/*.java'
+        targetExclude '**/build/**'
+        googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    format 'misc', {
+        target '.gitattributes', '.gitignore', '*.gradle', '*.md'
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
 test {
     useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = '0.8.13'
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+    }
 }
 
 tasks.named('processResources', ProcessResources).configure {

@@ -24,10 +24,13 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Verify formatting, run static analysis, build, and test
-        run: ./gradlew check spotlessCheck --stacktrace
+      - name: Verify formatting
+        run: ./gradlew spotlessCheck --stacktrace
 
-      - name: Upload test and analysis reports
+      - name: Build and test
+        run: ./gradlew check jacocoTestReport --stacktrace
+
+      - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
