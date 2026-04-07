@@ -67,11 +67,16 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.13.4'
 
     // Example:
     // compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     // compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     // runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+}
+
+test {
+    useJUnitPlatform()
 }
 
 tasks.named('processResources', ProcessResources).configure {
