@@ -49,7 +49,7 @@ This port is licensed under the **GNU General Public License v3.0 (GPL-3.0-or-la
 If you use this mod in a modpack, video, or public project, credit is appreciated:
 
 ```
-Enchanting Convergence: Reenchanted by Gorbiel  
+Enchanting Convergence: Reenchanted by Gorbiel
 https://github.com/Gorbiel/EnchantingConvergenceReenchanted
 ```
 
