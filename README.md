@@ -2,8 +2,6 @@
 
 A modern port of **Enchanting Convergence** to Minecraft 1.20.1
 
----
-
 ## About
 
 **Enchanting Convergence: Reenchanted** is a small utility mod that overhauls Minecraft’s enchanting system, inspired by the mod *Enchanting Plus*.
@@ -15,14 +13,10 @@ Instead of relying on random enchantments, this mod allows players to:
 
 This creates a more controlled and strategic enchanting experience.
 
----
-
 ## Status
 
 > This port is considered a **work in progress**.
 > Some features may change or be incomplete.
-
----
 
 ## Features
 
@@ -35,8 +29,6 @@ This creates a more controlled and strategic enchanting experience.
 * Scrollable enchantment list
 * Custom enchanting table GUI
 
----
-
 ## License
 
 ### Original Work
@@ -46,8 +38,6 @@ Enchanting Convergence: Reenchanted is based on the original [Enchanting Converg
 ### This Port
 
 This port is licensed under the **GNU General Public License v3.0 (GPL-3.0-or-later)**.
-
----
 
 ## Distribution
 
@@ -62,8 +52,6 @@ If you use this mod in a modpack, video, or public project, credit is appreciate
 Enchanting Convergence: Reenchanted by Gorbiel  
 https://github.com/Gorbiel/EnchantingConvergenceReenchanted
 ```
-
----
 
 ## Building
 
