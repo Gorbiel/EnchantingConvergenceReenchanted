@@ -1,0 +1,23 @@
+name: Gameplay Change
+description: Suggest balance or gameplay changes
+title: "[Gameplay]: "
+labels: ["gameplay"]
+body:
+  - type: textarea
+    id: current
+    attributes:
+      label: Current behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: What feels wrong?
+    validations:
+      required: true
+
+  - type: textarea
+    id: change
+    attributes:
+      label: Suggested change

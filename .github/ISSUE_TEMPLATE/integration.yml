@@ -1,0 +1,23 @@
+name: Integration / Compatibility
+description: Request compatibility with another mod
+title: "[Integration]: "
+labels: ["integration"]
+body:
+  - type: input
+    id: mod
+    attributes:
+      label: Mod name
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What should be integrated?
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Additional details
