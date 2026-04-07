@@ -5,7 +5,7 @@ import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 
 public class EnchantingConvergenceCapabilities {
 
-	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-		event.register(CapabilityUnlockedEnchantmentLevels.class);
-	}
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.register(CapabilityUnlockedEnchantmentLevels.class);
+    }
 }

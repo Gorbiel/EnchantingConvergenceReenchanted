@@ -11,18 +11,13 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 public class ClientEnchantingConvergence {
 
-	public static void setupClient(FMLClientSetupEvent event) {
-		event.enqueueWork(() ->
-				MenuScreens.register(
-						EnchantingConvergenceContainers.ENCHANTING_TABLE.get(),
-						ScreenEnchantingConvergence::new
-				)
-		);
-	}
+    public static void setupClient(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> MenuScreens.register(
+                EnchantingConvergenceContainers.ENCHANTING_TABLE.get(), ScreenEnchantingConvergence::new));
+    }
 
-	@OnlyIn(Dist.CLIENT)
-	public static Player getPlayer() {
-		return Minecraft.getInstance().player;
-	}
-
+    @OnlyIn(Dist.CLIENT)
+    public static Player getPlayer() {
+        return Minecraft.getInstance().player;
+    }
 }

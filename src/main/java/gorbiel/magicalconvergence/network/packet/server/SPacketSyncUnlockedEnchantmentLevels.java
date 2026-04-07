@@ -1,15 +1,14 @@
 package gorbiel.magicalconvergence.network.packet.server;
 
-import java.util.function.Supplier;
-
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import gorbiel.magicalconvergence.capability.enchantment.CapabilityUnlockedEnchantmentLevelsProvider;
 import gorbiel.magicalconvergence.client.ClientEnchantingConvergence;
 import gorbiel.magicalconvergence.network.packet.IPacket;
-import net.minecraft.world.entity.player.Player;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import java.util.function.Supplier;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent.Context;
@@ -18,11 +17,11 @@ public class SPacketSyncUnlockedEnchantmentLevels implements IPacket {
 
     private Object2IntMap<ResourceLocation> map = new Object2IntOpenHashMap<>();
 
-    public SPacketSyncUnlockedEnchantmentLevels() {
-    }
+    public SPacketSyncUnlockedEnchantmentLevels() {}
 
     public SPacketSyncUnlockedEnchantmentLevels(Player player) {
-        player.getCapability(CapabilityUnlockedEnchantmentLevelsProvider.CAPABILITY).ifPresent(cap -> this.map = new Object2IntOpenHashMap<>(cap.getUnlockedEnchantmentLevels()));
+        player.getCapability(CapabilityUnlockedEnchantmentLevelsProvider.CAPABILITY)
+                .ifPresent(cap -> this.map = new Object2IntOpenHashMap<>(cap.getUnlockedEnchantmentLevels()));
     }
 
     @Override
@@ -49,7 +48,8 @@ public class SPacketSyncUnlockedEnchantmentLevels implements IPacket {
         ctx.enqueueWork(() -> {
             Player player = DistExecutor.safeCallWhenOn(Dist.CLIENT, () -> ClientEnchantingConvergence::getPlayer);
             if (player != null) {
-                player.getCapability(CapabilityUnlockedEnchantmentLevelsProvider.CAPABILITY).ifPresent(cap -> cap.setUnlockedEnchantmentLevels(this.map));
+                player.getCapability(CapabilityUnlockedEnchantmentLevelsProvider.CAPABILITY)
+                        .ifPresent(cap -> cap.setUnlockedEnchantmentLevels(this.map));
             }
         });
         ctx.setPacketHandled(true);
